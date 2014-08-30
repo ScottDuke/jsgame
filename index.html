@@ -35,7 +35,26 @@
           land = game.add.tileSprite(0, 0, 800, 600, 'earth');
           land.fixedToCamera = true;
 
-          tilesprite = game.add.tileSprite(300, 450, 200, 100, 'box');
+          boxes = game.add.group();
+          boxes.enableBody = true;
+          var blocks;
+          for(var i =0; i <= 20; i++){
+            blocks = boxes.create(game.world.randomX, game.world.randomY, 'box');
+            blocks.body.immovable = true;
+          }
+
+          // blocks = boxes.create(game.world.randomX, game.world.randomY, 'box');
+          // blocks.body.immovable = true;
+          // blocks = boxes.create(game.world.randomX, game.world.randomY, 'box');
+          // blocks.body.immovable = true;
+          // blocks = boxes.create(game.world.randomX, game.world.randomY, 'box');
+          // blocks.body.immovable = true;
+          // blocks = boxes.create(game.world.randomX, game.world.randomY, 'box');
+          // blocks.body.immovable = true;
+          // blocks = boxes.create(game.world.randomX, game.world.randomY, 'box');
+          // blocks.body.immovable = true;
+          // blocks = boxes.create(game.world.randomX, game.world.randomY, 'box');
+          // blocks.body.immovable = true;
 
           bullets = game.add.group();
           bullets.enableBody = true;
@@ -48,13 +67,13 @@
           player = game.add.sprite(game.world.randomX, game.world.randomY, 'player');
           player.anchor.set(0.5);
 
-          game.physics.enable([player, tilesprite ], Phaser.Physics.ARCADE);
+          game.physics.enable(player, Phaser.Physics.ARCADE);
           player.body.allowRotation = false;
 
           player.body.collideWorldBounds = true;
 
-          tilesprite.body.collideWorldBounds = true;
-          tilesprite.body.immovable = true;
+          // tilesprite.body.collideWorldBounds = true;
+          // tilesprite.body.immovable = true;
 
           game.camera.follow(player);
           game.camera.deadzone = new Phaser.Rectangle(150, 150, 500, 300);
@@ -91,20 +110,19 @@
           land.tilePosition.x = -game.camera.x;
           land.tilePosition.y = -game.camera.y;   
 
-          game.physics.arcade.collide(player, tilesprite);
-          
-          if(game.physics.arcade.collide(bullets, tilesprite, collisionHandler, null, this)){
+          game.physics.arcade.collide(player, boxes);          
+          game.physics.arcade.collide(bullets, boxes, collisionHandler, null, this);
             
-          }
 
           player.rotation = game.physics.arcade.angleToPointer(player);
-            if (game.input.activePointer.isDown)
+
+          if (game.input.activePointer.isDown)
           {
               fire();
           }
         }
 
-        function collisionHandler(box, bullet) {
+        function collisionHandler(bullet, box) {
           bullet.kill();
         }
 
