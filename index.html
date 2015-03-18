@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     <script src="javascripts/respond.js"></script>
+    <script src="scripts/phaser.min.js"></script>
     <!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
@@ -67,6 +68,115 @@ Other features that I hope to build in:</p>
 </ul>
       </section>
 
+    </div>
+    <div>
+    <h2>Work In Progress Demo:</h2>
+      <script type="text/javascript">
+        window.onload = function() {
+          var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+          function preload() {
+              game.load.image('earth', 'img/Dirt.png');
+              game.load.image('player', 'img/player.png');
+              game.load.image('easter', 'img/easter.png');
+              game.load.image('bullet', 'img/bullet.png');  
+              game.load.image('box', 'img/box1.png');
+          }
+          var land;
+          var player;
+          var cursors;
+          var bullets;
+          var fireRate = 100;
+          var nextFire = 0;
+          function create() {
+            game.physics.startSystem(Phaser.Physics.ARCADE);
+            game.world.setBounds(-1000, -1000, 2000, 2000);
+            land = game.add.tileSprite(0, 0, 800, 600, 'earth');
+            land.fixedToCamera = true;
+            boxes = game.add.group();
+            boxes.enableBody = true;
+            var blocks;
+            for(var i =0; i <= 20; i++){
+              blocks = boxes.create(game.world.randomX, game.world.randomY, 'box');
+              blocks.body.immovable = true;
+            }
+            // blocks = boxes.create(game.world.randomX, game.world.randomY, 'box');
+            // blocks.body.immovable = true;
+            // blocks = boxes.create(game.world.randomX, game.world.randomY, 'box');
+            // blocks.body.immovable = true;
+            // blocks = boxes.create(game.world.randomX, game.world.randomY, 'box');
+            // blocks.body.immovable = true;
+            // blocks = boxes.create(game.world.randomX, game.world.randomY, 'box');
+            // blocks.body.immovable = true;
+            // blocks = boxes.create(game.world.randomX, game.world.randomY, 'box');
+            // blocks.body.immovable = true;
+            // blocks = boxes.create(game.world.randomX, game.world.randomY, 'box');
+            // blocks.body.immovable = true;
+            bullets = game.add.group();
+            bullets.enableBody = true;
+            bullets.physicsBodyType = Phaser.Physics.ARCADE;
+            bullets.createMultiple(50, 'bullet');
+            bullets.setAll('checkWorldBounds', true);
+            bullets.setAll('outOfBoundsKill', true);
+            player = game.add.sprite(game.world.randomX, game.world.randomY, 'player');
+            player.anchor.set(0.5);
+            game.physics.enable(player, Phaser.Physics.ARCADE);
+            player.body.allowRotation = false;
+            player.body.collideWorldBounds = true;
+            // tilesprite.body.collideWorldBounds = true;
+            // tilesprite.body.immovable = true;
+            game.camera.follow(player);
+            game.camera.deadzone = new Phaser.Rectangle(150, 150, 500, 300);
+            game.camera.focusOnXY(0, 0);
+            cursors = game.input.keyboard.createCursorKeys();          
+          }
+          function update() {     
+            if (cursors.left.isDown || game.input.keyboard.isDown(65))
+            {
+                player.body.velocity.x = -200;
+            }
+            else if (cursors.right.isDown || game.input.keyboard.isDown(68))
+            {
+                player.body.velocity.x = 200;
+            }
+            else if (cursors.up.isDown || game.input.keyboard.isDown(87))
+            {
+                //  The speed we'll travel at
+              player.body.velocity.y = -200;
+            }
+            else if (cursors.down.isDown || game.input.keyboard.isDown(83))
+            {
+              player.body.velocity.y = 200;
+            }
+            else
+            {
+               player.body.velocity.y = 0;
+               player.body.velocity.x = 0;
+            }
+            land.tilePosition.x = -game.camera.x;
+            land.tilePosition.y = -game.camera.y;   
+            game.physics.arcade.collide(player, boxes);          
+            game.physics.arcade.collide(bullets, boxes, collisionHandler, null, this);
+              
+            player.rotation = game.physics.arcade.angleToPointer(player);
+            if (game.input.activePointer.isDown)
+            {
+                fire();
+            }
+          }
+          function collisionHandler(bullet, box) {
+            bullet.kill();
+          }
+          function fire() {
+            if (game.time.now > nextFire && bullets.countDead() > 0)
+            {
+                nextFire = game.time.now + fireRate;
+                var bullet = bullets.getFirstDead();
+                bullet.reset(player.x - 8, player.y - 8);
+                game.physics.arcade.moveToPointer(bullet, 300);
+            }
+          }
+        };
+      </script>
     </div>
     <!--[if !IE]><script>fixScale(document);</script><![endif]-->
     
